@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import PrinterInterface from "../printer-interface";
 import EpsonConfig from "./epson-config";
 import EpsonCodePages from "./epson-code-pages";
-import PNGReader from "png.js";
+// import { PNG } from "pngjs/browser";
 
 interface Pixel {
   r: number;
@@ -258,30 +258,31 @@ class Epson implements PrinterInterface {
   // ----------------------------------------------------- PRINT IMAGE -----------------------------------------------------
   // https://reference.epson-biz.com/modules/ref_escpos/index.php?content_id=88
   async printImage(image: string): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", image, true);
-      xhr.responseType = "arraybuffer";
-
-      xhr.onload = e => {
-        const r = e.target as XMLHttpRequest;
-        if (r.status == 200) {
-          const reader = new PNGReader(r.response);
-          reader.parse((err: any, png: any) => {
-            if (err) {
-              reject(err);
-            } else {
-              const buff = this.printImageBuffer(png.width, png.height, png.pixels);
-              resolve(buff);
-            }
-          });
-        }
-      };
-
-      xhr.onerror = reject;
-      xhr.onabort = reject;
-      xhr.send();
-    });
+    throw new Error('TODO');
+    // return new Promise((resolve, reject) => {
+    //   const xhr = new XMLHttpRequest();
+    //   xhr.open("GET", image, true);
+    //   xhr.responseType = "arraybuffer";
+    //
+    //   xhr.onload = e => {
+    //     const r = e.target as XMLHttpRequest;
+    //     if (r.status == 200) {
+    //       const reader = new PNG(r.response);
+    //       reader.parse((err: any, png: any) => {
+    //         if (err) {
+    //           reject(err);
+    //         } else {
+    //           const buff = this.printImageBuffer(png.width, png.height, png.pixels);
+    //           resolve(buff);
+    //         }
+    //       });
+    //     }
+    //   };
+    //
+    //   xhr.onerror = reject;
+    //   xhr.onabort = reject;
+    //   xhr.send();
+    // });
   }
 
   printImageBuffer(width: number, height: number, data: [number]): Buffer {

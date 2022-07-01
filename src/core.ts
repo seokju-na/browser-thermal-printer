@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import iconv from "iconv-lite";
-import PNGReader from "png.js";
+// import PNGReader from "png.js";
 import PrinterInterface from "./interfaces/printer-interface";
 import Star from "./interfaces/star/star";
 import Epson from "./interfaces/epson/epson";
@@ -339,18 +339,19 @@ export default class ThermalPrinter {
 
   // ----------------------------------------------------- PRINT IMAGE BUFFER -----------------------------------------------------
   async printImageBuffer(buffer: ArrayBuffer): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const reader = new PNGReader(buffer);
-      reader.parse((err: any, png: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          const buff = this.printer.printImageBuffer(png.width, png.height, png.data);
-          this.append(buff);
-          resolve(buff);
-        }
-      });
-    });
+    throw new Error('TODO');
+    // return new Promise((resolve, reject) => {
+    //   const reader = new PNGReader(buffer);
+    //   reader.parse((err: any, png: any) => {
+    //     if (err) {
+    //       reject(err);
+    //     } else {
+    //       const buff = this.printer.printImageBuffer(png.width, png.height, png.data);
+    //       this.append(buff);
+    //       resolve(buff);
+    //     }
+    //   });
+    // });
   }
 
   // ------------------------------ Set character set ------------------------------
