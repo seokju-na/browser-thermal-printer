@@ -1,5 +1,5 @@
 {
-  "name": "browser-thermal-printer",
+  "name": "@seokju.me/browser-thermal-printer",
   "version": "0.0.1",
   "description": "Print on Epson and Star thermal printers in a browser",
   "main": "dist/core.js",
