@@ -1,6 +1,6 @@
 {
   "name": "@seokju.me/browser-thermal-printer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Print on Epson and Star thermal printers in a browser",
   "main": "dist/core.js",
   "types": "dist/core.d.ts",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Klemen1337/browser-thermal-printer",
   "dependencies": {
     "buffer": "^6.0.3",
+    "iconv-lite": "^0.6.3",
     "png.js": "^0.2.1",
     "unorm": "^1.6.0"
   },

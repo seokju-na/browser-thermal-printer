@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import iconv from "iconv-lite";
 import PNGReader from "png.js";
 import PrinterInterface from "./interfaces/printer-interface";
 import Star from "./interfaces/star/star";
@@ -365,45 +366,57 @@ export default class ThermalPrinter {
 
   // ------------------------------ Append ------------------------------
   append(text: string | Buffer) {
-    // if (typeof text === "string") {
-    //   // Remove special characters.
-    //   if (this.config.removeSpecialCharacters) {
-    //     const combining = /[\u0300-\u036F]/g;
-    //     text = unorm.nfkd(text).replace(combining, "");
-    //   }
+    let txt: any = text;
+    const codePage = this.config.codePage!;
 
-    //   let endBuff = null;
-    //   for (const char of text) {
-    //     let code = char;
-    //     if (!/^[\x00-\x7F]$/.test(char)) {
-    //       if (code.toString() === "?") {
-    //         // Character not available in active code page, now try all other code pages.
-    //         for (const tmpCodePageKey of Object.keys(this.printer.config.CODE_PAGES)) {
-    //           if (code.toString() !== "?") {
-    //             // We found a match, change active code page.
-    //             this.config.codePage = tmpCodePageKey;
-    //             code = Buffer.concat([this.printer.codePage[tmpCodePageKey], code]);
-    //             break;
-    //           }
-    //         }
-    //       }
-    //     }
+    if (typeof text === 'string') {
+      let endBuff = null;
+      for (const char of text) {
+        let code: any = char;
+        if (!/^[\x00-\x7F]$/.test(char)) {
+          // Test if the active code page can print the current character.
+          try {
+            code = iconv.encode(char, this.printer.codePage[codePage]);
+          } catch (e) {
+            // Probably encoding not recognized.
+            console.error(e);
+            code = '?';
+          }
 
-    //     endBuff = endBuff ? Buffer.concat([endBuff, Buffer.from(code)]) : Buffer.from(code);
-    //   }
-    //   text = endBuff;
-    // }
+          if (code.toString() === '?') {
+            // Character not available in active code page, now try all other code pages.
+            for (const tmpCodePageKey of Object.keys(this.printer.codePage)) {
+              const tmpCodePage = this.printer.codePage[tmpCodePageKey];
 
-    if (text) {
-      let newBuffer = new Buffer("");
-      if (typeof text === "string") {
-        newBuffer = Buffer.from(text, "utf-8");
-      } else {
-        newBuffer = text;
+              try {
+                code = iconv.encode(char, tmpCodePage);
+              } catch (e) {
+                // Probably encoding not recognized.
+                console.error(e);
+              }
+
+              if (code.toString() !== '?') {
+                // We found a match, change active code page.
+                this.config.codePage = tmpCodePageKey;
+                code = Buffer.concat([this.printer.config[`CODE_PAGE_${tmpCodePageKey}`], Buffer.from(code)]);
+                break;
+              }
+            }
+          }
+        }
+
+        endBuff = endBuff ? Buffer.concat([endBuff, Buffer.from(code)]) : Buffer.from(code);
       }
+      txt = endBuff;
+    }
 
-      // Append buffer
-      this.buffer = Buffer.concat([this.buffer, newBuffer]);
+    // Append buffer
+    if (txt) {
+      if (this.buffer) {
+        this.buffer = Buffer.concat([this.buffer, txt]);
+      } else {
+        this.buffer = txt;
+      }
     }
   }
 }
