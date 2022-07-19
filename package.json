@@ -5,6 +5,7 @@
   "main": "dist/core.js",
   "types": "dist/core.d.ts",
   "scripts": {
+    "prepack": "rm -rf dist/ && yarn build",
     "start": "tsc --noEmit && node dist/core.js",
     "build": "tsc"
   },
